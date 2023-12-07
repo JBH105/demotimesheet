@@ -1,0 +1,5 @@
+/* Custom Tailwind CSS class for weekend cells */
+.weekend-cell {
+    border: 1px solid red; /* You can adjust the border color and style as needed */
+  }
+  
