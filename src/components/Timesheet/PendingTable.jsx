@@ -5,13 +5,39 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { app } from '../../firebase';
 import PdfModal from './PdfModal';
+import axios from 'axios';
+import { PDFDocument } from 'pdf-lib';
+import PdfModelCount from '../../utils/generatePdfContent';
+import { pdf } from '@react-pdf/renderer';
+
 
 function PendingTable({ filteredTimesheets,fetch,setFetch }) {
     const db = getFirestore(app);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [calculatedEarnings, setCalculatedEarnings] = useState({});
+    const [generatedPdf, setGeneratedPdf] = useState(null);
+
+    const sendEmail = async (data) => {
+      const formData = new FormData();
+      formData.append("to", data.email);
+      formData.append("subject", "Timesheet");
+      formData.append("text", "Hello Dear <br/> Pease checck your timesheet");
     
+      const pdfContent = await PdfModelCount(data);
+      const pdfBlob = await pdf(pdfContent).toBlob()
+      const pdfFile = new File([pdfBlob], "timesheet.pdf", { type: "application/pdf" });
+    
+      formData.append("pdfFile", pdfFile);
+    
+      try {
+        const result = await axios.post("http://localhost:8000/send-email", formData);
+        console.log(result);
+        toast(result.data.message);
+      } catch (err) {
+        console.error("err", err);
+      }
+    };
     
 
     const approveTimesheet = async (record) => {
@@ -124,7 +150,12 @@ function PendingTable({ filteredTimesheets,fetch,setFetch }) {
                 setModalVisible(true); // Open the modal
               }}>Generate Paystub</Button>
             )}
-          </div>
+           {record.status === 'approved' && (
+             <Button className='bg-green-700 text-white' onClick={() => {
+                sendEmail(record)
+              }}>Send Email</Button>
+           )}
+              </div>
         ),
       },
   ];
@@ -211,7 +242,7 @@ const calculateTotalBreaks = (record) => {
           onCancel={() => setModalVisible(false)} // Close the modal when the user clicks outside of it
           footer={null} // No footer (remove this line if you want a footer with buttons)
         >
-          {modalVisible && <PdfModal record={selectedRecord} />}
+          {modalVisible && <PdfModal record={selectedRecord}/>}
         </Modal>
       </div>
     </div>
