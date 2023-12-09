@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import { Table,Button,Modal } from 'antd';
 import { query, where,doc, getDocs,updateDoc, collection, getFirestore } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
@@ -17,6 +17,7 @@ function PendingTable({ filteredTimesheets,fetch,setFetch }) {
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [calculatedEarnings, setCalculatedEarnings] = useState({});
     const [generatedPdf, setGeneratedPdf] = useState(null);
+    const [payStubNumber, setPayStubNumber] = useState("00000");
 
     const sendEmail = async (data) => {
       const formData = new FormData();
@@ -24,6 +25,7 @@ function PendingTable({ filteredTimesheets,fetch,setFetch }) {
       formData.append("subject", "Timesheet");
       formData.append("text", "Hello Dear <br/> Pease checck your timesheet");
     
+      data.payStubNumber = payStubNumber
       const pdfContent = await PdfModelCount(data);
       const pdfBlob = await pdf(pdfContent).toBlob()
       const pdfFile = new File([pdfBlob], "timesheet.pdf", { type: "application/pdf" });
@@ -39,6 +41,21 @@ function PendingTable({ filteredTimesheets,fetch,setFetch }) {
       }
     };
     
+    useEffect(() => {
+      const lastPayStubNumber =
+        localStorage.getItem("lastPayStubNumber") || "00000";
+      setPayStubNumber(lastPayStubNumber);
+  
+      const generateNextPayStubNumber = () => {
+        const nextPayStubNumber = String(Number(lastPayStubNumber) + 1).padStart(
+          5,
+          "0"
+        );
+        setPayStubNumber(nextPayStubNumber);
+        localStorage.setItem("lastPayStubNumber", nextPayStubNumber);
+      };
+      generateNextPayStubNumber();
+    }, []);
 
     const approveTimesheet = async (record) => {
         
@@ -242,7 +259,7 @@ const calculateTotalBreaks = (record) => {
           onCancel={() => setModalVisible(false)} // Close the modal when the user clicks outside of it
           footer={null} // No footer (remove this line if you want a footer with buttons)
         >
-          {modalVisible && <PdfModal record={selectedRecord}/>}
+          {modalVisible && <PdfModal record={selectedRecord} payStubNumber={payStubNumber}/>}
         </Modal>
       </div>
     </div>
