@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
-  PDFViewer,
   Document,
   Page,
   Text,
   View,
   Image,
+  BlobProvider,
+  PDFViewer,
   Font,
 } from "@react-pdf/renderer";
-import DMSans from "../../assets/DMSans_18pt-SemiBold.ttf";
 import moment from "moment";
+import DMSans from "../assets/DMSans_18pt-SemiBold.ttf";
 
 const currentDate = new Date();
-const year = currentDate.getFullYear(); // Get the current year (e.g., 2023)
-const month = currentDate.getMonth() + 1; // Get the current month (Note: Month is zero-based, so January is 0, February is 1, etc.)
+const year = currentDate.getFullYear();
+const month = currentDate.getMonth() + 1;
 const day = currentDate.getDate();
+
 Font.register({
   family: "DMSans",
   src: DMSans,
@@ -180,8 +182,64 @@ const calculateTotalAmount = (totalTime, rate) => {
   return totalAmount.toFixed(2);
 };
 
-const PdfDocument = ({ record, earnings, payStubNumber }) => (
-  <>
+const PdfModelCount = (record) => {
+  // Convert time in the format "Xh Ym" to decimal hours
+  const convertTimeToDecimal = (time) => {
+    const [hoursStr, minutesStr] = time.split(" ");
+    const hours = parseInt(hoursStr.replace("h", ""), 10);
+    const minutes = parseInt(minutesStr.replace("m", ""), 10);
+
+    return hours + minutes / 60;
+  };
+  // Calculate total earnings for hourly payType
+  const calculateHourlyEarnings = (record) => {
+    const { payRate, totalTime, overtime1, overtime2 } = record;
+
+    const totalDecimalHours = convertTimeToDecimal(totalTime).toFixed(2);
+    const overtime1DecimalHours = convertTimeToDecimal(overtime1).toFixed(2);
+    const overtime2DecimalHours = convertTimeToDecimal(overtime2).toFixed(2);
+
+    const regularEarnings =
+      payRate *
+      (totalDecimalHours - overtime1DecimalHours - overtime2DecimalHours);
+    const overtime1Earnings = payRate * 1.5 * overtime1DecimalHours;
+    const overtime2Earnings = payRate * 2 * overtime2DecimalHours;
+
+    return (regularEarnings + overtime1Earnings + overtime2Earnings).toFixed(2);
+  };
+
+  // Calculate total earnings for weekly payType
+  const calculateWeeklyEarnings = (record) => {
+    const { payRate, worked } = record;
+    return (worked ? payRate : 0).toFixed(2);
+  };
+
+  // Calculate total earnings for security payType
+  const calculateSecurityEarnings = (record) => {
+    const { payRate, totalTime } = record;
+    const totalDecimalHours = convertTimeToDecimal(totalTime).toFixed(2);
+    return (payRate * totalDecimalHours).toFixed(2);
+  };
+
+  // Calculate total earnings for bagger payType
+  const calculateBaggerEarnings = (record) => {
+    const { payRate, totalUnits } = record;
+    return (payRate * totalUnits).toFixed(2);
+  };
+
+  let earnings;
+  if (record.payType === "hourly") {
+    earnings = calculateHourlyEarnings(record);
+  } else if (record.payType === "weekly") {
+    earnings = calculateWeeklyEarnings(record);
+  } else if (record.payType === "security") {
+    earnings = calculateSecurityEarnings(record);
+  } else if (record.payType === "bagger") {
+    earnings = calculateBaggerEarnings(record);
+  } else {
+    earnings = "";
+  }
+  const pdf = (
     <Document title={`${record.name}'s TimeSheet`}>
       <Page size="A4" style={styles.page}>
         <View
@@ -262,7 +320,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               fontWeight: "500",
             }}
           >
-            {payStubNumber}
+            {record.payStubNumber}
           </Text>
         </View>
         <View style={styles.payPeriod}>
@@ -718,84 +776,8 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
         </View>
       </Page>
     </Document>
-  </>
-);
-
-const PdfModal = ({ record, onClose,payStubNumber }) => {
-
-  // Convert time in the format "Xh Ym" to decimal hours
-  const convertTimeToDecimal = (time) => {
-    const [hoursStr, minutesStr] = time.split(" ");
-    const hours = parseInt(hoursStr.replace("h", ""), 10);
-    const minutes = parseInt(minutesStr.replace("m", ""), 10);
-
-    return hours + minutes / 60;
-  };
-  // Calculate total earnings for hourly payType
-  const calculateHourlyEarnings = (record) => {
-    const { payRate, totalTime, overtime1, overtime2 } = record;
-
-    const totalDecimalHours = convertTimeToDecimal(totalTime).toFixed(2);
-    const overtime1DecimalHours = convertTimeToDecimal(overtime1).toFixed(2);
-    const overtime2DecimalHours = convertTimeToDecimal(overtime2).toFixed(2);
-
-    const regularEarnings =
-      payRate *
-      (totalDecimalHours - overtime1DecimalHours - overtime2DecimalHours);
-    const overtime1Earnings = payRate * 1.5 * overtime1DecimalHours;
-    const overtime2Earnings = payRate * 2 * overtime2DecimalHours;
-
-    return (regularEarnings + overtime1Earnings + overtime2Earnings).toFixed(2);
-  };
-
-  // Calculate total earnings for weekly payType
-  const calculateWeeklyEarnings = (record) => {
-    const { payRate, worked } = record;
-    return (worked ? payRate : 0).toFixed(2);
-  };
-
-  // Calculate total earnings for security payType
-  const calculateSecurityEarnings = (record) => {
-    const { payRate, totalTime } = record;
-    const totalDecimalHours = convertTimeToDecimal(totalTime).toFixed(2);
-    return (payRate * totalDecimalHours).toFixed(2);
-  };
-
-  // Calculate total earnings for bagger payType
-  const calculateBaggerEarnings = (record) => {
-    const { payRate, totalUnits } = record;
-    return (payRate * totalUnits).toFixed(2);
-  };
-
-  let earnings;
-  if (record.payType === "hourly") {
-    earnings = calculateHourlyEarnings(record);
-  } else if (record.payType === "weekly") {
-    earnings = calculateWeeklyEarnings(record);
-  } else if (record.payType === "security") {
-    earnings = calculateSecurityEarnings(record);
-  } else if (record.payType === "bagger") {
-    earnings = calculateBaggerEarnings(record);
-  } else {
-    earnings = "";
-  }
-
-  return (
-    <div style={{ height: "100%" }}>
-      {/* PDFViewer wrapping the PdfDocument */}
-      <PDFViewer width="100%" height="100%">
-        {/* Pass the required props to the PdfDocument component */}
-        <PdfDocument
-          record={record}
-          earnings={earnings}
-          payStubNumber={payStubNumber}
-        />
-      </PDFViewer>
-
-      {/* Close button */}
-      <button onClick={onClose}>Close</button>
-    </div>
   );
+  return pdf;
 };
 
-export default PdfModal;
+export default PdfModelCount;

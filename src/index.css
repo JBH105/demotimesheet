@@ -3,6 +3,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-family: 'DM Sans', sans-serif;
+}
+
 :root {
   font-family: 'DM Sans', sans-serif;
   line-height: 1.5;
