@@ -8,7 +8,7 @@ import moment from 'moment';
 import Loading from '../../components/Common/Loading';
 import { handleTimeChange, getDateRange } from '../../utils/timeUtils';
 
-function TimesheetTable({ selectedDateRange, selectedPayType, setSelectedDateRange, employees, setEmployees, fetch, setFetch }) {
+function TimesheetTable({ selectedDateRange, selectedPayType,selectePosition, setSelectedDateRange, employees, setEmployees, fetch, setFetch }) {
 
   const [timesheetData, setTimesheetData] = useState([]);
   const [datesArray, setDatesArray] = useState([]);
@@ -29,7 +29,7 @@ function TimesheetTable({ selectedDateRange, selectedPayType, setSelectedDateRan
       generateTimesheetData();
     }
 
-  }, [selectedDateRange, employees, selectedPayType]);
+  }, [selectedDateRange, employees, selectedPayType, selectePosition]);
 
   useEffect(() => {
     setFilterLoading(false);
@@ -41,14 +41,14 @@ function TimesheetTable({ selectedDateRange, selectedPayType, setSelectedDateRan
     const dates = getDateRange(selectedDateRange)
     setDatesArray(dates);
 
-    const timesheetDataArray = generateEmployeeTimesheets(employees, selectedPayType, dates, startDate, endDate);
+    const timesheetDataArray = generateEmployeeTimesheets(employees, selectedPayType,selectePosition, dates, startDate, endDate);
     setTimesheetData(timesheetDataArray);
   };
 
-  const generateEmployeeTimesheets = (employees, selectedPayType, dates, startDate, endDate) => {
+  const generateEmployeeTimesheets = (employees, selectedPayType, selectePosition, dates, startDate, endDate) => {
 
     const timesheetDataArray = [];
-    let filteredEmployees = employees.filter(x => x.payType.toLowerCase() === selectedPayType);
+    let filteredEmployees = employees.filter(x => x.payType.toLowerCase() === selectedPayType && x.position === selectePosition);
     if (selectedPayType === "all") filteredEmployees = employees;
     filteredEmployees.forEach(employee => {
 

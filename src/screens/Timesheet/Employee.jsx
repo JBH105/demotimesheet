@@ -224,8 +224,18 @@ function Employee() {
                         <Input />
                       </Form.Item>
 
-                      <Form.Item label="Position" name="position">
+                      {/* <Form.Item label="Position" name="position">
                         <Input />
+                      </Form.Item> */}
+                      <Form.Item label="Position" name="position">
+                        <Select>
+                          <Option value="Factory Worker">Factory Worker</Option>
+                          <Option value="Operator">Operator</Option>
+                          <Option value="Bagger">Bagger</Option>
+                          <Option value="General Manager">General Manager</Option>
+                          <Option value="Labourer">Labourer</Option>
+                          <Option value="CEO">CEO</Option>
+                        </Select>
                       </Form.Item>
                       <Form.Item label="Address" name="address">
                         <Input />

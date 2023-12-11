@@ -20,6 +20,7 @@ function Timesheet() {
   const [selectedDateRange, setSelectedDateRange] = useState([]);
   const [selectedPayType, setSelectedPayType] = useState([]);
   const [timesheetData, setTimesheetData] = useState([]);
+  const [selectePosition, setSelectePosition] = useState([])
   // This holds the information about dark mode/light mode
   const [mode, setMode] = useState();
 
@@ -118,6 +119,11 @@ function Timesheet() {
     setSelectedPayType(payType)
   }
 
+  const handlePositionChange = async (payType) => {
+    await sleep(500)
+    setSelectePosition(payType)
+  }
+
   return (
     <div className={`${mode === 'dark' ? 'bg-white' : 'bg-white'} font-lato`}>
       <Topbar collapsed={collapsed} />
@@ -138,6 +144,7 @@ function Timesheet() {
             <Form.Item label="Date Range">
               <DatePicker.RangePicker onChange={handleDateRangeChange} />
             </Form.Item>
+            
             <Form.Item label="Pay Type">
               <Select defaultValue="" style={{ width: 120 }} onChange={handlePayTypeChange}>
                 <Select.Option value="">None</Select.Option>
@@ -148,6 +155,19 @@ function Timesheet() {
                 <Select.Option value="all">All</Select.Option>
               </Select>
             </Form.Item>
+
+            <Form.Item label="Position">
+              <Select defaultValue="" style={{ width: 150 }} onChange={handlePositionChange}>
+                <Select.Option value="">None</Select.Option>
+                <Select.Option value="Factory Worker">Factory Worker</Select.Option>
+                <Select.Option value="Operator">Operator</Select.Option>
+                <Select.Option value="Bagger">Bagger</Select.Option>
+                <Select.Option value="General Manager">General Manager</Select.Option>
+                <Select.Option value="Labourer">Labourer</Select.Option>
+                <Select.Option value="CEO">CEO</Select.Option>
+              </Select>
+            </Form.Item>
+            
           </div>
           <div className="w-12/12 flex flex-row justify-center align-middle">
 
@@ -155,13 +175,13 @@ function Timesheet() {
             {
               !exsist &&
               <div style={{ overflowX: 'auto' }}>
-                <TimesheetTable selectedDateRange={selectedDateRange} selectedPayType={selectedPayType} setSelectedDateRange={setSelectedDateRange} employees={employees} setEmployees={setEmployees} fetch={fetch} setFetch={setFetch} />
+                <TimesheetTable selectedDateRange={selectedDateRange} selectedPayType={selectedPayType} selectePosition={selectePosition} setSelectedDateRange={setSelectedDateRange} employees={employees} setEmployees={setEmployees} fetch={fetch} setFetch={setFetch} />
               </div>
             }
             {
               exsist &&
               <div style={{ overflowX: 'auto' }}>
-                <EditTimeSheetTable selectedDateRange={selectedDateRange} selectedPayType={selectedPayType} employees={employees} timesheetDataFromFirebase={timesheetData} fetch={fetch} setFetch={setFetch} />
+                <EditTimeSheetTable selectedDateRange={selectedDateRange} selectedPayType={selectedPayType} selectePosition={selectePosition} employees={employees} timesheetDataFromFirebase={timesheetData} fetch={fetch} setFetch={setFetch} />
               </div>
             }
           </div>

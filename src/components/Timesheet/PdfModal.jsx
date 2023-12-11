@@ -230,10 +230,10 @@ const PdfDocument = ({ record, earnings }) => (
             style={{
               color: "#7030a0",
               fontSize: "20px",
-              fontWeight: "extrabold",
+              // fontWeight: "extrabold",
               width: "200px",
               fontFamily: "DMSans",
-              fontWeight: "500",
+              // fontWeight: "500",
             }}
           >
             ${earnings}
@@ -285,11 +285,11 @@ const PdfDocument = ({ record, earnings }) => (
             style={{
               color: "#7030a0",
               fontSize: "11px",
-              fontWeight: "extrabold",
+              // fontWeight: "extrabold",
               width: "200px",
               paddingTop: "2px",
               fontFamily: "DMSans",
-              fontWeight: "500",
+              // fontWeight: "500",
             }}
           >
             {formatDateRange(record.period)}
@@ -322,11 +322,11 @@ const PdfDocument = ({ record, earnings }) => (
             style={{
               color: "#7030a0",
               fontSize: "11px",
-              fontWeight: "extrabold",
+              // fontWeight: "extrabold",
               width: "200px",
               paddingTop: "2px",
               fontFamily: "DMSans",
-              fontWeight: "500",
+              // fontWeight: "500",
             }}
           >
             {record.date}
@@ -385,7 +385,7 @@ const PdfDocument = ({ record, earnings }) => (
             style={{
               color: "#fff",
               fontSize: "11px",
-              fontWeight: "extrabold",
+              // fontWeight: "extrabold",
               backgroundColor: "#373737",
               width: "100%",
               padding: "4px 8px",
@@ -393,7 +393,7 @@ const PdfDocument = ({ record, earnings }) => (
               minWidth: "100px",
               textAlign: "center",
               fontFamily: "DMSans",
-              fontWeight: "500",
+              // fontWeight: "500",
             }}
           >
             QTY/HRS
@@ -417,7 +417,7 @@ const PdfDocument = ({ record, earnings }) => (
             style={{
               color: "#fff",
               fontSize: "11px",
-              fontWeight: "extrabold",
+              // fontWeight: "extrabold",
               backgroundColor: "#373737",
               width: "70px",
               marginRight: "20px",
@@ -425,7 +425,7 @@ const PdfDocument = ({ record, earnings }) => (
               marginLeft: "-1px",
               minWidth: "70px",
               fontFamily: "DMSans",
-              fontWeight: "500",
+              // fontWeight: "500",
             }}
           >
             AMOUNT
