@@ -100,7 +100,8 @@ function Employee() {
       const values = await form.validateFields();
       // Convert payRate to a number
       values.payRate = parseFloat(values.payRate);
-  
+      values.address = values.address || ""
+      values.phoneNumber = values.phoneNumber || ""
       // Convert birthday from moment to a string in the desired format
       values.birthday = values.birthday.format('YYYY-MM-DD'); // Convert moment to string
   
@@ -217,7 +218,7 @@ function Employee() {
                     onCancel={handleCancel}
                   >
                     <Form form={form} layout="vertical">
-                      <Form.Item label="Full Name" name="name">
+                      <Form.Item label="Full Name" name="name" rules={[{ required: true, message: 'Please enter a Full Name' }]}>
                         <Input />
                       </Form.Item>
                       <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Please enter a valid email' }]}>
@@ -227,7 +228,7 @@ function Employee() {
                       {/* <Form.Item label="Position" name="position">
                         <Input />
                       </Form.Item> */}
-                      <Form.Item label="Position" name="position">
+                      <Form.Item label="Position" name="position" rules={[{ required: true, message: 'Please select a Position' }]}>
                         <Select>
                           <Option value="Factory Worker">Factory Worker</Option>
                           <Option value="Operator">Operator</Option>
@@ -240,13 +241,13 @@ function Employee() {
                       <Form.Item label="Address" name="address">
                         <Input />
                       </Form.Item>
-                      <Form.Item label="SIN" name="sin">
+                      <Form.Item label="SIN" name="sin" rules={[{ required: true, message: 'Please enter a SIN' }]}>
                         <Input />
                       </Form.Item>
-                      <Form.Item label="Birthday" name="birthday">
+                      <Form.Item label="Birthday" name="birthday" rules={[{ required: true, message: 'Please enter a Birthday' }]}>
                         <DatePicker format="YYYY-MM-DD" />
                       </Form.Item>
-                      <Form.Item label="Pay Type" name="payType">
+                      <Form.Item label="Pay Type" name="payType" rules={[{ required: true, message: 'Please select a PayType' }]}>
                         <Select>
                           <Option value="hourly">Hourly</Option>
                           <Option value="weekly">Weekly</Option>
@@ -254,7 +255,7 @@ function Employee() {
                           <Option value="bagger">Bagger</Option>
                         </Select>
                       </Form.Item>
-                      <Form.Item label="Pay Rate" name="payRate">
+                      <Form.Item label="Pay Rate" name="payRate" rules={[{ required: true, message: 'Please enter a PayRate' }]}>
                         <Input type="number" step="0.01" />
                       </Form.Item>
                       <Form.Item label="Phone Number" name="phoneNumber">
