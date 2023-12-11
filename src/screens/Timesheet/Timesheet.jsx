@@ -144,17 +144,6 @@ function Timesheet() {
             <Form.Item label="Date Range">
               <DatePicker.RangePicker onChange={handleDateRangeChange} />
             </Form.Item>
-            
-            <Form.Item label="Pay Type">
-              <Select defaultValue="" style={{ width: 120 }} onChange={handlePayTypeChange}>
-                <Select.Option value="">None</Select.Option>
-                <Select.Option value="hourly">Hourly</Select.Option>
-                <Select.Option value="weekly">Weekly</Select.Option>
-                <Select.Option value="security">Security</Select.Option>
-                <Select.Option value="bagger">Bagger</Select.Option>
-                <Select.Option value="all">All</Select.Option>
-              </Select>
-            </Form.Item>
 
             <Form.Item label="Position">
               <Select defaultValue="" style={{ width: 150 }} onChange={handlePositionChange}>

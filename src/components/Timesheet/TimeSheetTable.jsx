@@ -8,7 +8,7 @@ import moment from 'moment';
 import Loading from '../../components/Common/Loading';
 import { handleTimeChange, getDateRange } from '../../utils/timeUtils';
 
-function TimesheetTable({ selectedDateRange, selectedPayType,selectePosition, setSelectedDateRange, employees, setEmployees, fetch, setFetch }) {
+function TimesheetTable({ selectedDateRange,selectePosition, setSelectedDateRange, employees, setEmployees, fetch, setFetch }) {
 
   const [timesheetData, setTimesheetData] = useState([]);
   const [datesArray, setDatesArray] = useState([]);
@@ -29,7 +29,7 @@ function TimesheetTable({ selectedDateRange, selectedPayType,selectePosition, se
       generateTimesheetData();
     }
 
-  }, [selectedDateRange, employees, selectedPayType, selectePosition]);
+  }, [selectedDateRange, employees, selectePosition]);
 
   useEffect(() => {
     setFilterLoading(false);
@@ -41,31 +41,15 @@ function TimesheetTable({ selectedDateRange, selectedPayType,selectePosition, se
     const dates = getDateRange(selectedDateRange)
     setDatesArray(dates);
 
-    const timesheetDataArray = generateEmployeeTimesheets(employees, selectedPayType,selectePosition, dates, startDate, endDate);
+    const timesheetDataArray = generateEmployeeTimesheets(employees,selectePosition, dates, startDate, endDate);
     setTimesheetData(timesheetDataArray);
   };
 
-  const generateEmployeeTimesheets = (employees, selectedPayType, selectePosition, dates, startDate, endDate) => {
+  const generateEmployeeTimesheets = (employees, selectePosition, dates, startDate, endDate) => {
 
     const timesheetDataArray = [];
-    // let filteredEmployees = employees.filter(x => {
-    //   if (selectedPayType === "") {
-    //     return x.position === selectePosition;
-    //    }else if(selectePosition === ""){
-    //     return x.payType.toLowerCase() === selectedPayType
-    //    }else {
-    //     return x.payType.toLowerCase() === selectedPayType && x.position === selectePosition;
-    //   }
-    // });
-    let filteredEmployees = employees.filter(x => {
-      const isPayTypeMatch = selectedPayType === "" || x.payType.toLowerCase() === selectedPayType;
-      const isPositionMatch = selectePosition === "" || x.position === selectePosition;
-    
-      return isPayTypeMatch && isPositionMatch;
-    });
-        
-    // let filteredEmployees = employees.filter(x => x.payType.toLowerCase() === selectedPayType && x.position === selectePosition);
-    if (selectedPayType === "all") filteredEmployees = employees;
+    let filteredEmployees = employees.filter(x => x.position === selectePosition);
+    if (selectePosition === "") filteredEmployees = employees;
     filteredEmployees.forEach(employee => {
 
       const period = `${startDate?.format("YYYY-MM-DD")}-${endDate?.format("YYYY-MM-DD")}`
