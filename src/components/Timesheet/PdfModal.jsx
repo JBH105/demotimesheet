@@ -180,7 +180,7 @@ const calculateTotalAmount = (totalTime, rate) => {
   return totalAmount.toFixed(2);
 };
 
-const PdfDocument = ({ record, earnings, payStubNumber }) => (
+const PdfDocument = ({ record, earnings }) => (
   <>
     <Document title={`${record.name}'s TimeSheet`}>
       <Page size="A4" style={styles.page}>
@@ -262,7 +262,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               fontWeight: "500",
             }}
           >
-            {payStubNumber}
+            {record.paystubnumber}
           </Text>
         </View>
         <View style={styles.payPeriod}>
@@ -329,7 +329,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               fontWeight: "500",
             }}
           >
-            {day}-{month}-{year}
+            {record.date}
           </Text>
         </View>
         <View style={styles.userData}>
@@ -486,7 +486,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               fontWeight: "500",
             }}
           >
-            Regual Hours
+            Regular Hours
           </Text>
           <Text
             style={{
@@ -556,7 +556,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               textAlign: "center",
             }}
           >
-            ${record.payRate}
+            ${record.payRate / 2 + record.payRate}
           </Text>
           <Text
             style={{
@@ -570,7 +570,11 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               fontWeight: "500",
             }}
           >
-            ${calculateTotalAmount(record.overtime1, record.payRate)}
+            $
+            {calculateTotalAmount(
+              record.overtime1,
+              record.payRate / 2 + record.payRate
+            )}
           </Text>
         </View>
         <View style={styles.earningData}>
@@ -605,7 +609,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               textAlign: "center",
             }}
           >
-            ${record.payRate}
+            ${record.payRate * 2}
           </Text>
           <Text
             style={{
@@ -619,7 +623,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
               fontWeight: "500",
             }}
           >
-            ${calculateTotalAmount(record.overtime2, record.payRate)}
+            ${calculateTotalAmount(record.overtime2, record.payRate * 2)}
           </Text>
         </View>
         <View style={styles.earningData}>
@@ -721,8 +725,7 @@ const PdfDocument = ({ record, earnings, payStubNumber }) => (
   </>
 );
 
-const PdfModal = ({ record, onClose,payStubNumber }) => {
-
+const PdfModal = ({ record, onClose, payStubNumber }) => {
   // Convert time in the format "Xh Ym" to decimal hours
   const convertTimeToDecimal = (time) => {
     const [hoursStr, minutesStr] = time.split(" ");
@@ -785,11 +788,7 @@ const PdfModal = ({ record, onClose,payStubNumber }) => {
       {/* PDFViewer wrapping the PdfDocument */}
       <PDFViewer width="100%" height="100%">
         {/* Pass the required props to the PdfDocument component */}
-        <PdfDocument
-          record={record}
-          earnings={earnings}
-          payStubNumber={payStubNumber}
-        />
+        <PdfDocument record={record} earnings={earnings} />
       </PDFViewer>
 
       {/* Close button */}

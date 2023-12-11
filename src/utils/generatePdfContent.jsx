@@ -320,7 +320,7 @@ const PdfModelCount = (record) => {
               fontWeight: "500",
             }}
           >
-            {record.payStubNumber}
+            {record.paystubnumber}
           </Text>
         </View>
         <View style={styles.payPeriod}>
@@ -387,7 +387,7 @@ const PdfModelCount = (record) => {
               fontWeight: "500",
             }}
           >
-            {day}-{month}-{year}
+            {record.date}
           </Text>
         </View>
         <View style={styles.userData}>
@@ -544,7 +544,7 @@ const PdfModelCount = (record) => {
               fontWeight: "500",
             }}
           >
-            Regual Hours
+            Regular Hours
           </Text>
           <Text
             style={{
@@ -614,7 +614,7 @@ const PdfModelCount = (record) => {
               textAlign: "center",
             }}
           >
-            ${record.payRate}
+            ${record.payRate / 2 + record.payRate}
           </Text>
           <Text
             style={{
@@ -628,7 +628,11 @@ const PdfModelCount = (record) => {
               fontWeight: "500",
             }}
           >
-            ${calculateTotalAmount(record.overtime1, record.payRate)}
+            $
+            {calculateTotalAmount(
+              record.overtime1,
+              record.payRate / 2 + record.payRate
+            )}
           </Text>
         </View>
         <View style={styles.earningData}>
@@ -663,7 +667,7 @@ const PdfModelCount = (record) => {
               textAlign: "center",
             }}
           >
-            ${record.payRate}
+            ${record.payRate * 2}
           </Text>
           <Text
             style={{
@@ -677,7 +681,7 @@ const PdfModelCount = (record) => {
               fontWeight: "500",
             }}
           >
-            ${calculateTotalAmount(record.overtime2, record.payRate)}
+            ${calculateTotalAmount(record.overtime2, record.payRate * 2)}
           </Text>
         </View>
         <View style={styles.earningData}>
