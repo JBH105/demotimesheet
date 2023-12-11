@@ -18,9 +18,9 @@ function Timesheet() {
   const [exsist, setExsist] = useState(false);
   const [fetch, setFetch] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState([]);
-  const [selectedPayType, setSelectedPayType] = useState([]);
+  const [selectedPayType, setSelectedPayType] = useState("");
   const [timesheetData, setTimesheetData] = useState([]);
-  const [selectePosition, setSelectePosition] = useState([])
+  const [selectePosition, setSelectePosition] = useState("")
   // This holds the information about dark mode/light mode
   const [mode, setMode] = useState();
 

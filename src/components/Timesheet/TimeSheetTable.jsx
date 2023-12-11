@@ -48,7 +48,23 @@ function TimesheetTable({ selectedDateRange, selectedPayType,selectePosition, se
   const generateEmployeeTimesheets = (employees, selectedPayType, selectePosition, dates, startDate, endDate) => {
 
     const timesheetDataArray = [];
-    let filteredEmployees = employees.filter(x => x.payType.toLowerCase() === selectedPayType && x.position === selectePosition);
+    // let filteredEmployees = employees.filter(x => {
+    //   if (selectedPayType === "") {
+    //     return x.position === selectePosition;
+    //    }else if(selectePosition === ""){
+    //     return x.payType.toLowerCase() === selectedPayType
+    //    }else {
+    //     return x.payType.toLowerCase() === selectedPayType && x.position === selectePosition;
+    //   }
+    // });
+    let filteredEmployees = employees.filter(x => {
+      const isPayTypeMatch = selectedPayType === "" || x.payType.toLowerCase() === selectedPayType;
+      const isPositionMatch = selectePosition === "" || x.position === selectePosition;
+    
+      return isPayTypeMatch && isPositionMatch;
+    });
+        
+    // let filteredEmployees = employees.filter(x => x.payType.toLowerCase() === selectedPayType && x.position === selectePosition);
     if (selectedPayType === "all") filteredEmployees = employees;
     filteredEmployees.forEach(employee => {
 
