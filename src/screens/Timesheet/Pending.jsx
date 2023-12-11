@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Select, Table } from 'antd';
-import { query, where, getDocs, collection, getFirestore } from 'firebase/firestore';
+import { query, where, getDocs, collection, getFirestore, updateDoc, doc } from 'firebase/firestore';
 import { app } from '../../firebase';
 import Sidebar from "../../components/Common/Sidebar"
 import Topbar from "../../components/Common/Topbar"
@@ -96,10 +96,27 @@ function Pending() {
       if (selectedStartDate) {
         const timesheetsCollection = collection(db, 'timesheet');
         const q = query(timesheetsCollection, where('status', '==', status), where('start', '==', selectedStartDate));
+        const paystubnumber = await getDocs(timesheetsCollection);
         const querySnapshot = await getDocs(q);
+
+        let maxPaystubNumber = '00000'
+
+        paystubnumber.forEach((doc) => {
+          const data = doc.data();    
+          if (data.hasOwnProperty('paystubnumber')) {
+            const paystubNumber = data.paystubnumber;
+    
+            if (paystubNumber > maxPaystubNumber) {
+              maxPaystubNumber = paystubNumber;
+            }
+          }
+        });
+        
+        const newGeneratedPaystubNumber = String(Number(maxPaystubNumber) + 1).padStart(5, '0');
 
         const timesheets = querySnapshot.docs.map((doc) => ({
           id: doc.id, // Adding the document ID to the data object
+          newGeneratedPaystubNumber,
           ...doc.data(),
         }));
         setFilteredTimesheets(timesheets);
@@ -110,8 +127,6 @@ function Pending() {
 
     filterTimesheets();
   }, [db, selectedStartDate, status, fetch]);
-
-
 
   return (
     <div className={`${mode === 'dark' ? 'bg-white' : 'bg-white'} font-lato`}>

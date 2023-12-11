@@ -10,6 +10,10 @@ import { PDFDocument } from 'pdf-lib';
 import PdfModelCount from '../../utils/generatePdfContent';
 import { pdf } from '@react-pdf/renderer';
 
+const currentDate = new Date();
+const year = currentDate.getFullYear(); // Get the current year (e.g., 2023)
+const month = currentDate.getMonth() + 1; // Get the current month (Note: Month is zero-based, so January is 0, February is 1, etc.)
+const day = currentDate.getDate();
 
 function PendingTable({ filteredTimesheets,fetch,setFetch }) {
     const db = getFirestore(app);
@@ -17,15 +21,15 @@ function PendingTable({ filteredTimesheets,fetch,setFetch }) {
     const [selectedRecord, setSelectedRecord] = useState(null);
     const [calculatedEarnings, setCalculatedEarnings] = useState({});
     const [generatedPdf, setGeneratedPdf] = useState(null);
-    const [payStubNumber, setPayStubNumber] = useState("00000");
 
     const sendEmail = async (data) => {
       const formData = new FormData();
       formData.append("to", data.email);
       formData.append("subject", "Timesheet");
       formData.append("text", "Hello Dear <br/> Pease checck your timesheet");
-    
-      data.payStubNumber = payStubNumber
+     
+      data.date = day+"-"+month+"-"+year
+      
       const pdfContent = await PdfModelCount(data);
       const pdfBlob = await pdf(pdfContent).toBlob()
       const pdfFile = new File([pdfBlob], "timesheet.pdf", { type: "application/pdf" });
@@ -41,21 +45,24 @@ function PendingTable({ filteredTimesheets,fetch,setFetch }) {
       }
     };
     
-    useEffect(() => {
-      const lastPayStubNumber =
-        localStorage.getItem("lastPayStubNumber") || "00000";
-      setPayStubNumber(lastPayStubNumber);
-  
-      const generateNextPayStubNumber = () => {
-        const nextPayStubNumber = String(Number(lastPayStubNumber) + 1).padStart(
-          5,
-          "0"
-        );
-        setPayStubNumber(nextPayStubNumber);
-        localStorage.setItem("lastPayStubNumber", nextPayStubNumber);
-      };
-      generateNextPayStubNumber();
-    }, []);
+    const HandlePaystub = async (record) => {
+      setModalVisible(true); // Open the modal
+      // current date
+      const date = day+"-"+month+"-"+year
+
+      if (!record.paystubnumber) {
+        record.paystubnumber = record.newGeneratedPaystubNumber
+        record.date = date
+        const timesheetRef = doc(db, 'timesheet', record.id);
+        try {
+          await updateDoc(timesheetRef, { paystubnumber: record.newGeneratedPaystubNumber, date });
+          setFetch(!fetch)
+        } catch (error) {
+          console.error('Error updating timesheet:', error);
+        }
+      }
+      setSelectedRecord(record); // Save the selected record to state
+    }
 
     const approveTimesheet = async (record) => {
         
@@ -163,8 +170,7 @@ function PendingTable({ filteredTimesheets,fetch,setFetch }) {
             )}
             {record.status === 'approved' && (
               <Button className='bg-green-700 text-white' onClick={() => {
-                setSelectedRecord(record); // Save the selected record to state
-                setModalVisible(true); // Open the modal
+                HandlePaystub(record)
               }}>Generate Paystub</Button>
             )}
            {record.status === 'approved' && (
@@ -259,7 +265,7 @@ const calculateTotalBreaks = (record) => {
           onCancel={() => setModalVisible(false)} // Close the modal when the user clicks outside of it
           footer={null} // No footer (remove this line if you want a footer with buttons)
         >
-          {modalVisible && <PdfModal record={selectedRecord} payStubNumber={payStubNumber}/>}
+          {modalVisible && <PdfModal record={selectedRecord}/>}
         </Modal>
       </div>
     </div>
